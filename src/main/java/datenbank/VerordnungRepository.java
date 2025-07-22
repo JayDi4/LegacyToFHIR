@@ -1,9 +1,10 @@
 package datenbank;
 
-import model.krankenhaus.Bericht;
+
+import model.krankenhaus.Verordnung;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BerichtRepository extends JpaRepository<Bericht, Long> {
+public interface VerordnungRepository extends JpaRepository<Verordnung, Long> {
 }
