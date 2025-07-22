@@ -1,4 +1,4 @@
-package repository;
+package datenbank;
 
 public class PatientRepository {
 }
