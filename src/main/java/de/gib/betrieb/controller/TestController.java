@@ -1,11 +1,16 @@
 package de.gib.betrieb.controller;
 
+import de.gib.betrieb.service.FhirAdapterService;
 import de.gib.betrieb.service.TestdatenGenerator;
 import de.gib.betrieb.model.krankenhaus.Patient;
 import de.gib.betrieb.datenbank.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/test")
@@ -16,6 +21,9 @@ public class TestController {
 
     @Autowired
     private PatientRepository patientRepository;
+
+    @Autowired
+    private FhirAdapterService fhirService;
 
     /**
      * Status-Check
@@ -91,6 +99,117 @@ public class TestController {
     }
 
     /**
+     * Testet den FHIR-Adapter mit einem zufälligen Patienten
+     */
+    @GetMapping("/fhir-test")
+    public Map<String, Object> testeFhirAdapter() {
+        try {
+            Map<String, Object> testReslut = new HashMap<>();
+
+            // Statistiken holen
+            Map<String, Object> stats = fhirService.getAdapterStatistik();
+            testReslut.put("statistiken", stats);
+
+            // Ersten Patienten als FHIR konvertieren
+            List<Patient> patienten = patientRepository.findLetzteZehnPatienten();
+            if (!patienten.isEmpty()) {
+                Patient testPatient = patienten.get(0);
+                Map<String, Object> fhirPatient = fhirService.getPatientAlsFhir(testPatient.getPatientenId());
+                testReslut.put("beispielPatientFhir", fhirPatient);
+
+                // Befunde des Patienten als FHIR
+                List<Map<String, Object>> befunde = fhirService.getBefundeFuerPatient(testPatient.getPatientenId());
+                testReslut.put("anzahlBefundeFhir", befunde.size());
+                if (!befunde.isEmpty()) {
+                    testReslut.put("beispielBefundFhir", befunde.get(0));
+                }
+            }
+
+            testReslut.put("status", "FHIR-Adapter funktioniert korrekt!");
+            return testReslut;
+
+        } catch (Exception e) {
+            Map<String, Object> fehler = new HashMap<>();
+            fehler.put("status", "FEHLER");
+            fehler.put("nachricht", e.getMessage());
+            return fehler;
+        }
+    }
+
+    /**
+     * Vergleicht Legacy-Daten mit FHIR-Ausgabe
+     */
+    @GetMapping("/vergleiche/{patientId}")
+    public Map<String, Object> vergleicheLegacyMitFhir(@PathVariable Long patientId) {
+        Map<String, Object> vergleich = new HashMap<>();
+
+        try {
+            // Legacy-Daten
+            Optional<Patient> legacyPatient = patientRepository.findById(patientId);
+            if (legacyPatient.isPresent()) {
+                vergleich.put("legacyPatient", legacyPatient.get());
+
+                // FHIR-Daten
+                Map<String, Object> fhirPatient = fhirService.getPatientAlsFhir(patientId);
+                vergleich.put("fhirPatient", fhirPatient);
+
+                // Bundle
+                Map<String, Object> bundle = fhirService.getPatientBundle(patientId);
+                vergleich.put("fhirBundle", bundle);
+
+                vergleich.put("status", "Vergleich erfolgreich erstellt");
+            } else {
+                vergleich.put("status", "Patient nicht gefunden");
+            }
+
+        } catch (Exception e) {
+            vergleich.put("status", "FEHLER: " + e.getMessage());
+        }
+
+        return vergleich;
+    }
+
+    /**
+     * Performance-Test: Misst die Konvertierungszeit für mehrere Patienten
+     */
+    @GetMapping("/performance-test/{anzahl}")
+    public Map<String, Object> performanceTest(@PathVariable int anzahl) {
+        Map<String, Object> reslut = new HashMap<>();
+
+        try {
+            List<Patient> patienten = patientRepository.findAll();
+            if (patienten.size() < anzahl) {
+                anzahl = patienten.size();
+            }
+
+            long startZeit = System.currentTimeMillis();
+
+            int erfolgreich = 0;
+            for (int i = 0; i < anzahl; i++) {
+                Patient patient = patienten.get(i);
+                Map<String, Object> fhirPatient = fhirService.getPatientAlsFhir(patient.getPatientenId());
+                if (fhirPatient != null) {
+                    erfolgreich++;
+                }
+            }
+
+            long endZeit = System.currentTimeMillis();
+            long dauerMs = endZeit - startZeit;
+
+            reslut.put("getestetePatienten", anzahl);
+            reslut.put("erfolgreichKonvertiert", erfolgreich);
+            reslut.put("dauerMillisekunden", dauerMs);
+            reslut.put("durchschnittProPatient", dauerMs / (double) anzahl);
+            reslut.put("patienenProSekunde", (anzahl * 1000.0) / dauerMs);
+
+        } catch (Exception e) {
+            reslut.put("fehler", e.getMessage());
+        }
+
+        return reslut;
+    }
+
+    /**
      * Hilfe-Seite
      */
     @GetMapping("/help")
@@ -103,6 +222,7 @@ public class TestController {
                GET  /api/test/hello         - Einfacher Test
                GET  /api/test/help          - Diese Hilfe
                
+                          
                Statistiken:
                GET  /api/test/statistik     - Anzahl Patienten
                
