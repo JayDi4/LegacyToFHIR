@@ -1,6 +1,7 @@
 package de.gib.betrieb.model.krankenhaus;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 @Entity
@@ -14,16 +15,19 @@ public class Standort {
 
     @ManyToOne
     @JoinColumn(name = "einrichtungs_id")
+    @JsonIgnore  // Referenz zur Einrichtung ignorieren
     private Einrichtung einrichtung;
 
     private String bezeichnung;
     private String typ;
 
-    // Beziehungen
+    // Listen mit @JsonIgnore markieren
     @OneToMany(mappedBy = "standort", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Behandlungsfall> behandlungsfaelle;
 
     @OneToMany(mappedBy = "standort", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Termin> termine;
 
     // Konstruktoren

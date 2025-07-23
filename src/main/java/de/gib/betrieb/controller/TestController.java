@@ -44,12 +44,12 @@ public class TestController {
     }
 
     /**
-     * Zeigt erste 5 Patienten an - JETZT OHNE zirkuläre Referenzen
+     * Zeigt letzte 10 Patienten an
      */
-    @GetMapping("/patienten")
-    public List<Patient> getErstePatienten() {
+    @GetMapping("/letzte10Patienten")
+    public List<Patient> getLetzte10Patienten() {
         List<Patient> allePatienten = patientRepository.findAll();
-        return allePatienten.subList(0, Math.min(5, allePatienten.size()));
+        return allePatienten.subList(0, Math.min(10, allePatienten.size()));
     }
 
     /**
@@ -108,7 +108,7 @@ public class TestController {
                GET  /api/test/statistik     - Anzahl Patienten
                
                Patienten anzeigen:
-               GET  /api/test/patienten     - Erste 5 Patienten
+               GET  /api/test/letzte10Patienten     - Letzte 10 Patienten
                GET  /api/test/suche/{name}  - Suche nach Nachname
                
                Daten verwalten:

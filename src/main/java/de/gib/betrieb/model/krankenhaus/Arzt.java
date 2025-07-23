@@ -1,6 +1,7 @@
 package de.gib.betrieb.model.krankenhaus;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 @Entity
@@ -16,14 +17,17 @@ public class Arzt {
     private String nachname;
     private String fachrichtung;
 
-    // Beziehungen
+    // ALLE Listen mit @JsonIgnore markieren
     @OneToMany(mappedBy = "arzt", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Behandlungsfall> behandlungsfaelle;
 
     @OneToMany(mappedBy = "arzt", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Verordnung> verordnungen;
 
     @OneToMany(mappedBy = "arzt", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Termin> termine;
 
     // Konstruktoren

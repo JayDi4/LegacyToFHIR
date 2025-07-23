@@ -14,9 +14,10 @@ public class Behandlungsfall {
     @Column(name = "fall_id")
     private Long fallId;
 
+    // ALLE @ManyToOne Referenzen ignorieren
     @ManyToOne
     @JoinColumn(name = "patienten_id")
-    @JsonIgnore  // <- Patient-Referenz ignorieren um ewigen Kreislauf zu vermeiden, sonst Referenziert immer mit sich selbst
+    @JsonIgnore
     private Patient patient;
 
     @ManyToOne
@@ -33,7 +34,7 @@ public class Behandlungsfall {
     private LocalDateTime ende;
     private String art;
 
-
+    // ALLE Listen ignorieren
     @OneToMany(mappedBy = "behandlungsfall", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Befund> befunde;

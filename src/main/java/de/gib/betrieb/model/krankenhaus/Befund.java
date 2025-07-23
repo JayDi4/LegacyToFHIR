@@ -1,6 +1,7 @@
 package de.gib.betrieb.model.krankenhaus;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,6 +15,7 @@ public class Befund {
 
     @ManyToOne
     @JoinColumn(name = "fall_id")
+    @JsonIgnore  // Referenz zum Behandlungsfall ignorieren
     private Behandlungsfall behandlungsfall;
 
     private String code;

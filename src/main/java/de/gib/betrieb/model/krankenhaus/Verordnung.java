@@ -1,6 +1,7 @@
 package de.gib.betrieb.model.krankenhaus;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,16 +13,20 @@ public class Verordnung {
     @Column(name = "verordnung_id")
     private Long verordnungId;
 
+    // ALLE @ManyToOne Referenzen ignorieren
     @ManyToOne
     @JoinColumn(name = "patienten_id")
+    @JsonIgnore
     private Patient patient;
 
     @ManyToOne
     @JoinColumn(name = "medikament_id")
+    @JsonIgnore
     private Medikament medikament;
 
     @ManyToOne
     @JoinColumn(name = "arzt_id")
+    @JsonIgnore
     private Arzt arzt;
 
     @Column(name = "verordnet_am")

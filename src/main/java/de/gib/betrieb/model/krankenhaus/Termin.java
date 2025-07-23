@@ -1,6 +1,7 @@
 package de.gib.betrieb.model.krankenhaus;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,16 +13,20 @@ public class Termin {
     @Column(name = "termin_id")
     private Long terminId;
 
+
     @ManyToOne
     @JoinColumn(name = "patienten_id")
+    @JsonIgnore
     private Patient patient;
 
     @ManyToOne
     @JoinColumn(name = "arzt_id")
+    @JsonIgnore
     private Arzt arzt;
 
     @ManyToOne
     @JoinColumn(name = "standort_id")
+    @JsonIgnore
     private Standort standort;
 
     private LocalDateTime beginn;

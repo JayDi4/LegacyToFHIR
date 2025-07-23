@@ -2,6 +2,7 @@ package de.gib.betrieb.model.krankenhaus;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "bericht")
@@ -14,6 +15,7 @@ public class Bericht {
 
     @ManyToOne
     @JoinColumn(name = "fall_id")
+    @JsonIgnore
     private Behandlungsfall behandlungsfall;
 
     private String code;

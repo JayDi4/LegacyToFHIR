@@ -1,6 +1,7 @@
 package de.gib.betrieb.model.krankenhaus;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 @Entity
@@ -15,8 +16,9 @@ public class Einrichtung {
     private String name;
     private String typ;
 
-    // Beziehungen
+    // Liste mit @JsonIgnore markieren
     @OneToMany(mappedBy = "einrichtung", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Standort> standorte;
 
     // Konstruktoren
