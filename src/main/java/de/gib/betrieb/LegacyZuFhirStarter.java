@@ -8,7 +8,7 @@ public class LegacyZuFhirStarter {
 
     public static void main(String[] args) {
         SpringApplication.run(LegacyZuFhirStarter.class, args);
-        System.out.println("FHIR Legacy Adapter gestartet auf Port 8090!");
-        System.out.println("Test: http://localhost:8090/api/test/hello");
+        System.out.println("Swagger UI: http://localhost:8090/swagger-ui.html");
+        System.out.println("FHIR Legacy Adapter - Vollständige API-Übersicht unter http://localhost:8090/swagger-ui/index.html#/test-controller/getHilfe");
     }
 }
