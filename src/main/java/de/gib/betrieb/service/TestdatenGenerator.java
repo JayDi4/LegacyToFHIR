@@ -131,7 +131,7 @@ public class TestdatenGenerator {
         } catch(Exception e) {
             System.err.println("Fehler bei der Testdaten-Generierung: " + e.getMessage());
             e.printStackTrace();
-            throw e; // Weitergeben für Controller-Fehlerbehandlung
+            throw e;
         }
     }
 

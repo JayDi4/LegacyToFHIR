@@ -29,20 +29,24 @@ public class Termin {
     @JsonIgnore
     private Standort standort;
 
-    private LocalDateTime beginn;
-    private LocalDateTime ende;
+    @Column(name = "beginn_zeit")
+    private LocalDateTime beginnZeit;
+
+    @Column(name = "ende_zeit")
+    private LocalDateTime endeZeit;
+
     private String status;
 
     // Konstruktoren
     public Termin() {}
 
     public Termin(Patient patient, Arzt arzt, Standort standort,
-                  LocalDateTime beginn, LocalDateTime ende, String status) {
+                  LocalDateTime beginnZeit, LocalDateTime endeZeit, String status) {
         this.patient = patient;
         this.arzt = arzt;
         this.standort = standort;
-        this.beginn = beginn;
-        this.ende = ende;
+        this.beginnZeit = beginnZeit;
+        this.endeZeit = endeZeit;
         this.status = status;
     }
 
@@ -59,13 +63,12 @@ public class Termin {
     public Standort getStandort() { return standort; }
     public void setStandort(Standort standort) { this.standort = standort; }
 
-    public LocalDateTime getBeginn() { return beginn; }
-    public void setBeginn(LocalDateTime beginn) { this.beginn = beginn; }
+    public LocalDateTime getBeginnZeit() { return beginnZeit; }
+    public void setBeginnZeit(LocalDateTime beginnZeit) { this.beginnZeit = beginnZeit; }
 
-    public LocalDateTime getEnde() { return ende; }
-    public void setEnde(LocalDateTime ende) { this.ende = ende; }
+    public LocalDateTime getEndeZeit() { return endeZeit; }
+    public void setEndeZeit(LocalDateTime endeZeit) { this.endeZeit = endeZeit; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 }
-
