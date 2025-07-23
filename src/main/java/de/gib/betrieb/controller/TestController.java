@@ -44,12 +44,11 @@ public class TestController {
     }
 
     /**
-     * Zeigt letzte 10 Patienten an
+     * Zeigt die letzten 10 Patienten an (nach ID sortiert, neueste zuerst)
      */
     @GetMapping("/letzte10Patienten")
     public List<Patient> getLetzte10Patienten() {
-        List<Patient> allePatienten = patientRepository.findAll();
-        return allePatienten.subList(0, Math.min(10, allePatienten.size()));
+        return patientRepository.findLetzteZehnPatienten();
     }
 
     /**

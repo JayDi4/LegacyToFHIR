@@ -19,4 +19,8 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     // Custom Query für Performance-Tests
     @Query("SELECT p FROM Patient p WHERE p.nachname LIKE %?1%")
     List<Patient> findePatientenMitNachnameEnthaelt(String namensteil);
+
+    //Letzte 10 Patienten nach ID sortiert
+    @Query("SELECT p FROM Patient p ORDER BY p.patientenId DESC LIMIT 10")
+    List<Patient> findLetzteZehnPatienten();
 }
