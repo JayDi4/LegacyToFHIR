@@ -2,7 +2,7 @@ package de.gib.betrieb.controller;
 
 import de.gib.betrieb.service.FhirAdapterService;
 import de.gib.betrieb.service.TestdatenGenerator;
-import de.gib.betrieb.model.krankenhaus.Patient;
+import de.gib.betrieb.model.Patient;
 import de.gib.betrieb.datenbank.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

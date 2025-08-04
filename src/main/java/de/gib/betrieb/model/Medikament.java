@@ -1,4 +1,4 @@
-package de.gib.betrieb.model.krankenhaus;
+package de.gib.betrieb.model;
 
 import jakarta.persistence.*;
 import java.util.List;

@@ -1,7 +1,7 @@
 package de.gib.betrieb.adapter;
 
-import de.gib.betrieb.model.krankenhaus.Bericht;
-import de.gib.betrieb.model.krankenhaus.Befund;
+import de.gib.betrieb.model.Bericht;
+import de.gib.betrieb.model.Befund;
 import de.gib.betrieb.datenbank.BefundRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

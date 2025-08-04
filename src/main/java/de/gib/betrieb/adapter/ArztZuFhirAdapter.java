@@ -1,6 +1,6 @@
 package de.gib.betrieb.adapter;
 
-import de.gib.betrieb.model.krankenhaus.Arzt;
+import de.gib.betrieb.model.Arzt;
 import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.HashMap;

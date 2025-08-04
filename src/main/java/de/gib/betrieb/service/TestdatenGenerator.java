@@ -1,6 +1,6 @@
 package de.gib.betrieb.service;
 
-import de.gib.betrieb.model.krankenhaus.*;
+import de.gib.betrieb.model.*;
 import de.gib.betrieb.datenbank.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

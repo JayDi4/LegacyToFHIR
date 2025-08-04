@@ -1,6 +1,6 @@
 package de.gib.betrieb.adapter;
 
-import de.gib.betrieb.model.krankenhaus.Patient;
+import de.gib.betrieb.model.Patient;
 import org.springframework.stereotype.Component;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;

@@ -1,6 +1,6 @@
 package de.gib.betrieb.datenbank;
 
-import de.gib.betrieb.model.krankenhaus.Arzt;
+import de.gib.betrieb.model.Arzt;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;

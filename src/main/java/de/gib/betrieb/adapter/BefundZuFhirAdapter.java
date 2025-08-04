@@ -1,6 +1,6 @@
 package de.gib.betrieb.adapter;
 
-import de.gib.betrieb.model.krankenhaus.Befund;
+import de.gib.betrieb.model.Befund;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.time.format.DateTimeFormatter;
