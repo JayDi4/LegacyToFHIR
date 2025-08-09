@@ -34,7 +34,6 @@ public class Behandlungsfall {
     private LocalDateTime ende;
     private String art;
 
-    // ALLE Listen ignorieren
     @OneToMany(mappedBy = "behandlungsfall", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Befund> befunde;

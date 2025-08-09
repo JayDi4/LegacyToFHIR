@@ -16,12 +16,10 @@ public class Einrichtung {
     private String name;
     private String typ;
 
-    // Liste mit @JsonIgnore markieren
     @OneToMany(mappedBy = "einrichtung", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Standort> standorte;
 
-    // Konstruktoren
     public Einrichtung() {}
 
     public Einrichtung(String name, String typ) {

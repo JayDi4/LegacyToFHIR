@@ -16,12 +16,10 @@ public class Medikament {
     private String code;
     private String bezeichnung;
 
-    // Beziehungen
     @OneToMany(mappedBy = "medikament", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Verordnung> verordnungen;
 
-    // Konstruktoren
     public Medikament() {}
 
     public Medikament(String code, String bezeichnung) {

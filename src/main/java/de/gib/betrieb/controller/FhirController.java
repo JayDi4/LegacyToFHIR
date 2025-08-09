@@ -9,10 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
-/**
- * REST Controller für FHIR-Endpunkte
- * Stellt die Legacy-Daten als FHIR-konforme Resources bereit
- */
+
+ // REST Controller für FHIR-Endpunkte
+ // Stellt die Legacy-Daten als FHIR-konforme Resources bereit
 @RestController
 @RequestMapping("/fhir")
 public class FhirController {
@@ -20,9 +19,9 @@ public class FhirController {
     @Autowired
     private FhirAdapterService fhirService;
 
-    /**
-     * FHIR-Startseite mit verfügbaren Endpunkten
-     */
+/**
+* FHIR-Startseite mit verfügbaren Endpunkten
+*/
     @GetMapping("/")
     public Map<String, Object> getFhirInfo() {
         Map<String, Object> info = new HashMap<>();
@@ -175,42 +174,4 @@ public class FhirController {
         }
     }
 
-    /**
-     * FHIR CapabilityStatement (vereinfacht)
-     */
-    @GetMapping("/metadata")
-    public Map<String, Object> getCapabilityStatement() {
-        Map<String, Object> capability = new HashMap<>();
-        capability.put("resourceType", "CapabilityStatement");
-        capability.put("status", "active");
-        capability.put("date", "2025-01-23");
-        capability.put("kind", "instance");
-        capability.put("software", Map.of(
-                "name", "FHIR Legacy Adapter",
-                "version", "1.0"
-        ));
-
-        // Unterstützte Resources
-        capability.put("rest", new Map[]{
-                Map.of(
-                        "mode", "server",
-                        "resource", new Map[]{
-                                Map.of("type", "Patient", "interaction", new Map[]{
-                                        Map.of("code", "read"), Map.of("code", "search-type")
-                                }),
-                                Map.of("type", "Practitioner", "interaction", new Map[]{
-                                        Map.of("code", "read"), Map.of("code", "search-type")
-                                }),
-                                Map.of("type", "Observation", "interaction", new Map[]{
-                                        Map.of("code", "read"), Map.of("code", "search-type")
-                                }),
-                                Map.of("type", "DiagnosticReport", "interaction", new Map[]{
-                                        Map.of("code", "read"), Map.of("code", "search-type")
-                                })
-                        }
-                )
-        });
-
-        return capability;
-    }
 }

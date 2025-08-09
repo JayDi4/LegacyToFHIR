@@ -60,10 +60,10 @@ public class TestController {
     }
 
     /**
-     * Statistik
+     * Anzahl der Patienten in der Datenbank
      */
-    @GetMapping("/statistik")
-    public String getStatistik() {
+    @GetMapping("/anzahlPatInDB")
+    public String getPatAnzahlInDB() {
         try {
             long anzahlPatienten = patientRepository.count();
             if (anzahlPatienten == 0) {
@@ -210,7 +210,7 @@ public class TestController {
     }
 
     /**
-     * Erweiterte Hilfe-Seite mit allen verfügbaren Endpunkten
+     * Erweiterte Hilfe-Seite mit allen verfügbaren Endpunkten (mit ChatGPT erstellt)
      */
     @GetMapping("/help")
     public String getHilfe() {
@@ -224,7 +224,7 @@ public class TestController {
                 Status & Info:
                 GET    /api/test/                    - System-Status
                 GET    /api/test/help                - Diese Hilfe-Seite
-                GET    /api/test/statistik           - Datenbank-Statistiken
+                GET    /api/test/statistik           - Anzahl der Patienten in der Datenbank
                 
                 Testdaten verwalten:
                 POST   /api/test/generiere/{anzahl}  - Testdaten erstellen (z.B. /generiere/50)
@@ -263,7 +263,7 @@ public class TestController {
                 ────────────────────────────────────────────────
                 FHIR-Adapter Tests:
                 GET    /api/test/fhir-test           - Grundfunktionen des FHIR-Adapters testen
-                GET    /api/test/vergleiche/{id}     - Legacy vs FHIR Daten vergleichen
+                GET    /api/test/vergleiche/{id}     - Legacy Daten mit FHIR Daten vergleichen
                 GET    /api/test/performance-test/{anzahl} - Performance-Test (z.B. /performance-test/100)
                 
                 DOKUMENTATION:

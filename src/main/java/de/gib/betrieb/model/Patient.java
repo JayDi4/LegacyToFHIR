@@ -20,7 +20,7 @@ public class Patient {
     private String geschlecht;
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
-    @JsonIgnore  // <- WICHTIG: Verhindert zirkuläre JSON-Referenzen (siehe Erklärung in Bachelorarbeit)
+    @JsonIgnore  // <- WICHTIG: Verhindert zirkuläre JSON-Referenzen (siehe Erklärung in Bachelorarbeit in Kapitel 3 Vorgehensweise)
     private List<Behandlungsfall> behandlungsfaelle;
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
@@ -31,7 +31,6 @@ public class Patient {
     @JsonIgnore
     private List<Termin> termine;
 
-    // Konstruktoren
     public Patient() {}
 
     public Patient(String vorname, String nachname, LocalDate geburtsdatum, String geschlecht) {

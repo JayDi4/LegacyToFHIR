@@ -37,7 +37,6 @@ public class Termin {
 
     private String status;
 
-    // Konstruktoren
     public Termin() {}
 
     public Termin(Patient patient, Arzt arzt, Standort standort,

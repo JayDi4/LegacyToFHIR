@@ -6,9 +6,8 @@ import io.swagger.v3.oas.models.info.Contact;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * Swagger/OpenAPI Konfiguration für die FHIR API Dokumentation
- */
+
+ // Swagger/OpenAPI Konfiguration für die FHIR API Doku
 @Configuration
 public class SwaggerConfig {
 

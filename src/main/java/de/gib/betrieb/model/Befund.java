@@ -23,7 +23,6 @@ public class Befund {
     private String einheit;
     private LocalDateTime zeitpunkt;
 
-    // Konstruktoren
     public Befund() {}
 
     public Befund(Behandlungsfall behandlungsfall, String code, String wert,

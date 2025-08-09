@@ -21,7 +21,6 @@ public class Standort {
     private String bezeichnung;
     private String typ;
 
-    // Listen mit @JsonIgnore markieren
     @OneToMany(mappedBy = "standort", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Behandlungsfall> behandlungsfaelle;
@@ -30,7 +29,6 @@ public class Standort {
     @JsonIgnore
     private List<Termin> termine;
 
-    // Konstruktoren
     public Standort() {}
 
     public Standort(Einrichtung einrichtung, String bezeichnung, String typ) {

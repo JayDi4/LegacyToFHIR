@@ -13,7 +13,6 @@ public class Verordnung {
     @Column(name = "verordnung_id")
     private Long verordnungId;
 
-    // ALLE @ManyToOne Referenzen ignorieren
     @ManyToOne
     @JoinColumn(name = "patienten_id")
     @JsonIgnore
@@ -35,7 +34,6 @@ public class Verordnung {
     private String status;
     private String dosierung;
 
-    // Konstruktoren
     public Verordnung() {}
 
     public Verordnung(Patient patient, Medikament medikament, Arzt arzt,

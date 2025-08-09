@@ -5,10 +5,8 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.HashMap;
 
-/**
- * Wandelt Legacy-Arzt-Daten in FHIR Practitioner Resource um
- * Entspricht dem FHIR R4 Practitioner Standard
- */
+//Wandelt Legacy-Arzt-Daten in FHIR Practitioner Resource um
+
 @Component
 public class ArztZuFhirAdapter {
 
@@ -45,7 +43,7 @@ public class ArztZuFhirAdapter {
         name.put("prefix", new String[]{"Dr."});
         fhirPractitioner.put("name", new Map[]{name});
 
-        // Qualifikation (Fachrichtung) hinzufügen
+        // Fachrichtung hinzufügen
         if (arzt.getFachrichtung() != null) {
             Map<String, Object> qualification = new HashMap<>();
 
@@ -61,16 +59,14 @@ public class ArztZuFhirAdapter {
             fhirPractitioner.put("qualification", new Map[]{qualification});
         }
 
-        // Status aktiv setzen
         fhirPractitioner.put("active", true);
 
         return fhirPractitioner;
     }
 
-    /**
-     * Mappt deutsche Fachrichtungen zu SNOMED CT Codes
-     * (Vereinfacht für Demo-Zwecke)
-     */
+
+   //  Hardgecodetes Mapping von Fachrichtungen zu SNOMED CT Codes als Beispiel
+
     private String mapFachrichtungZuSnomed(String fachrichtung) {
         switch (fachrichtung) {
             case "Innere Medizin":
@@ -86,20 +82,15 @@ public class ArztZuFhirAdapter {
             case "Radiologie":
                 return "394914008";
             default:
-                return "309343006"; // Physician
+                return "309343006";
         }
     }
 
-    /**
-     * Generiert FHIR-konforme Practitioner-URL
-     */
     public String generiereFhirUrl(Long arztId) {
         return "Practitioner/" + arztId;
     }
 
-    /**
-     * Erstellt eine Practitioner-Reference für andere FHIR Resources
-     */
+
     public Map<String, Object> erstellePractitionerReference(Arzt arzt) {
         Map<String, Object> reference = new HashMap<>();
         reference.put("reference", "Practitioner/" + arzt.getArztId());

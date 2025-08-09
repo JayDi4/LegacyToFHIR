@@ -7,10 +7,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.HashMap;
 
-/**
- * Wandelt Legacy-Befund-Daten in FHIR Observation Resource um
- * Entspricht dem FHIR R4 Observation Standard
- */
+
+// Wandelt Legacy-Befund-Daten aus der Postgre DB in FHIR Observation Resource um
+
 @Component
 public class BefundZuFhirAdapter {
 
@@ -20,9 +19,7 @@ public class BefundZuFhirAdapter {
     @Autowired
     private ArztZuFhirAdapter arztAdapter;
 
-    /**
-     * Konvertiert einen Legacy-Befund zu FHIR Observation JSON
-     */
+
     public Map<String, Object> konvertiereZuFhir(Befund befund) {
         if (befund == null) {
             return null;
@@ -34,7 +31,6 @@ public class BefundZuFhirAdapter {
         fhirObservation.put("resourceType", "Observation");
         fhirObservation.put("id", befund.getBefundId().toString());
 
-        // Meta-Informationen
         Map<String, Object> meta = new HashMap<>();
         meta.put("profile", new String[]{"http://hl7.org/fhir/StructureDefinition/Observation"});
         fhirObservation.put("meta", meta);
@@ -69,7 +65,7 @@ public class BefundZuFhirAdapter {
         category.put("coding", new Map[]{categoryCoding});
         fhirObservation.put("category", new Map[]{category});
 
-        // Code - was wurde gemessen
+        //  was wurde gemessen Code
         Map<String, Object> code = new HashMap<>();
         Map<String, Object> coding = new HashMap<>();
         coding.put("system", "http://krankenhaus.de/codes");
@@ -79,27 +75,23 @@ public class BefundZuFhirAdapter {
         code.put("text", mapCodeZuDisplay(befund.getCode()));
         fhirObservation.put("code", code);
 
-        // Subject - Patient-Referenz
         if (befund.getBehandlungsfall() != null && befund.getBehandlungsfall().getPatient() != null) {
             fhirObservation.put("subject",
                     patientAdapter.erstellePatientReference(befund.getBehandlungsfall().getPatient()));
         }
 
-        // Encounter - Behandlungsfall-Referenz
         if (befund.getBehandlungsfall() != null) {
             Map<String, Object> encounter = new HashMap<>();
             encounter.put("reference", "Encounter/" + befund.getBehandlungsfall().getFallId());
             fhirObservation.put("encounter", encounter);
         }
-
-        // Effective DateTime - Zeitpunkt der Messung
+        //  Zeitpunkt der Messung
         if (befund.getZeitpunkt() != null) {
             String zeitpunktFormatiert = befund.getZeitpunkt()
                     .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             fhirObservation.put("effectiveDateTime", zeitpunktFormatiert);
         }
 
-        // Value - Messwert
         if (befund.getWert() != null) {
             // Versuche numerischen Wert zu erkennen
             try {
@@ -120,7 +112,6 @@ public class BefundZuFhirAdapter {
             }
         }
 
-        // Performer - wer hat die Messung durchgeführt
         if (befund.getBehandlungsfall() != null && befund.getBehandlungsfall().getArzt() != null) {
             fhirObservation.put("performer", new Map[]{
                     arztAdapter.erstellePractitionerReference(befund.getBehandlungsfall().getArzt())
@@ -130,9 +121,9 @@ public class BefundZuFhirAdapter {
         return fhirObservation;
     }
 
-    /**
-     * Mappt interne Codes zu lesbaren Bezeichnungen
-     */
+
+    //  Mappt interne Codes zu lesbaren Bezeichnungen
+
     private String mapCodeZuDisplay(String code) {
         switch (code) {
             case "LAB-001":
@@ -151,10 +142,6 @@ public class BefundZuFhirAdapter {
                 return "Unbekannte Messung (" + code + ")";
         }
     }
-
-    /**
-     * Generiert FHIR-konforme Observation-URL
-     */
     public String generiereFhirUrl(Long befundId) {
         return "Observation/" + befundId;
     }

@@ -6,16 +6,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.HashMap;
 
-/**
- * Wandelt Legacy-Patient-Daten in FHIR Patient Resource um
- * Entspricht dem FHIR R4 Patient Standard
- */
+
+ // Wandelt Patienten Daten aus DB in FHIR Patient Resource um
+
 @Component
 public class PatientZuFhirAdapter {
 
-    /**
-     * Konvertiert einen Legacy-Patienten zu FHIR Patient JSON
-     */
+
     public Map<String, Object> konvertiereZuFhir(Patient patient) {
         if (patient == null) {
             return null;
@@ -58,15 +55,11 @@ public class PatientZuFhirAdapter {
             fhirPatient.put("birthDate", geburtsdatumFormatiert);
         }
 
-        // Status immer aktiv setzen
         fhirPatient.put("active", true);
 
         return fhirPatient;
     }
 
-    /**
-     * Konvertiert deutsches Geschlecht zu FHIR Gender Code
-     */
     private String konvertiereGeschlecht(String legacyGeschlecht) {
         if (legacyGeschlecht == null) {
             return "unknown";
@@ -87,16 +80,12 @@ public class PatientZuFhirAdapter {
         }
     }
 
-    /**
-     * Generiert FHIR-konforme Patient-URL
-     */
+
     public String generiereFhirUrl(Long patientId) {
         return "Patient/" + patientId;
     }
 
-    /**
-     * Erstellt eine Patient-Reference für andere FHIR Resources
-     */
+
     public Map<String, Object> erstellePatientReference(Patient patient) {
         Map<String, Object> reference = new HashMap<>();
         reference.put("reference", "Patient/" + patient.getPatientenId());

@@ -17,7 +17,6 @@ public class Arzt {
     private String nachname;
     private String fachrichtung;
 
-    // ALLE Listen mit @JsonIgnore markieren
     @OneToMany(mappedBy = "arzt", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Behandlungsfall> behandlungsfaelle;
@@ -30,7 +29,6 @@ public class Arzt {
     @JsonIgnore
     private List<Termin> termine;
 
-    // Konstruktoren
     public Arzt() {}
 
     public Arzt(String vorname, String nachname, String fachrichtung) {

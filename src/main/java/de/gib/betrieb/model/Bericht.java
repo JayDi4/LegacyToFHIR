@@ -23,7 +23,6 @@ public class Bericht {
     @Column(name = "erstellt_am")
     private LocalDateTime erstelltAm;
 
-    // Konstruktoren
     public Bericht() {}
 
     public Bericht(Behandlungsfall behandlungsfall, String code, LocalDateTime erstelltAm) {

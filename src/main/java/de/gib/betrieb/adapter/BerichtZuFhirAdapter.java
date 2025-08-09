@@ -3,6 +3,7 @@ package de.gib.betrieb.adapter;
 import de.gib.betrieb.model.Bericht;
 import de.gib.betrieb.model.Befund;
 import de.gib.betrieb.datenbank.BefundRepository;
+import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.time.format.DateTimeFormatter;
@@ -11,10 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 
-/**
- * Wandelt Legacy-Bericht-Daten in FHIR DiagnosticReport Resource um
- * Entspricht dem FHIR R4 DiagnosticReport Standard
- */
+
+ // Wandelt Daten aus PostgreDB in FHIR DiagnosticReport Resource um
 @Component
 public class BerichtZuFhirAdapter {
 
@@ -27,9 +26,6 @@ public class BerichtZuFhirAdapter {
     @Autowired
     private BefundRepository befundRepository;
 
-    /**
-     * Konvertiert einen Legacy-Bericht zu FHIR DiagnosticReport JSON
-     */
     public Map<String, Object> konvertiereZuFhir(Bericht bericht) {
         if (bericht == null) {
             return null;
@@ -90,41 +86,38 @@ public class BerichtZuFhirAdapter {
         code.put("text", mapCodeZuDisplay(bericht.getCode()));
         fhirReport.put("code", code);
 
-        // Subject - Patient-Referenz
         if (bericht.getBehandlungsfall() != null && bericht.getBehandlungsfall().getPatient() != null) {
             fhirReport.put("subject",
                     patientAdapter.erstellePatientReference(bericht.getBehandlungsfall().getPatient()));
         }
 
-        // Encounter - Behandlungsfall-Referenz
         if (bericht.getBehandlungsfall() != null) {
             Map<String, Object> encounter = new HashMap<>();
             encounter.put("reference", "Encounter/" + bericht.getBehandlungsfall().getFallId());
             fhirReport.put("encounter", encounter);
         }
 
-        // Effective DateTime - Zeitpunkt der Erstellung
+        //  Zeitpunkt der Erstellung
         if (bericht.getErstelltAm() != null) {
             String zeitpunktFormatiert = bericht.getErstelltAm()
                     .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             fhirReport.put("effectiveDateTime", zeitpunktFormatiert);
         }
 
-        // Issued - Ausgabezeitpunkt (gleich Erstellungszeitpunkt)
+        //  Ausgabezeitpunkt
         if (bericht.getErstelltAm() != null) {
             String zeitpunktFormatiert = bericht.getErstelltAm()
                     .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             fhirReport.put("issued", zeitpunktFormatiert);
         }
 
-        // Performer - wer hat den Bericht erstellt
         if (bericht.getBehandlungsfall() != null && bericht.getBehandlungsfall().getArzt() != null) {
             fhirReport.put("performer", new Map[]{
                     arztAdapter.erstellePractitionerReference(bericht.getBehandlungsfall().getArzt())
             });
         }
 
-        // Result - zugehörige Befunde/Observations
+        //  zugehörige Befunde/Observations
         if (bericht.getBehandlungsfall() != null) {
             List<Befund> befunde = befundRepository.findByBehandlungsfallFallId(
                     bericht.getBehandlungsfall().getFallId());
@@ -141,16 +134,13 @@ public class BerichtZuFhirAdapter {
             }
         }
 
-        // Conclusion - einfache Zusammenfassung
+        // kurze knappe Zusammenfassung
         fhirReport.put("conclusion", "Automatisch generierter Bericht vom Typ: " +
                 mapCodeZuDisplay(bericht.getCode()));
 
         return fhirReport;
     }
 
-    /**
-     * Mappt interne Codes zu lesbaren Bezeichnungen
-     */
     private String mapCodeZuDisplay(String code) {
         switch (code) {
             case "ARZTBRIEF":
@@ -166,9 +156,6 @@ public class BerichtZuFhirAdapter {
         }
     }
 
-    /**
-     * Generiert FHIR-konforme DiagnosticReport-URL
-     */
     public String generiereFhirUrl(Long berichtId) {
         return "DiagnosticReport/" + berichtId;
     }

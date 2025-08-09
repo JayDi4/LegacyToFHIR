@@ -9,14 +9,12 @@ import java.util.List;
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, Long> {
 
-    // Einfache Abfragen
     List<Patient> findByNachname(String nachname);
     List<Patient> findByGeschlecht(String geschlecht);
 
-    // Zusammengesetzte Abfrage
     List<Patient> findByVornameAndNachname(String vorname, String nachname);
 
-    // Custom Query für Performance-Tests
+    // Query für Performance-Tests
     @Query("SELECT p FROM Patient p WHERE p.nachname LIKE %?1%")
     List<Patient> findePatientenMitNachnameEnthaelt(String namensteil);
 
