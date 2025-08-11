@@ -14,7 +14,7 @@ public final class erstelleNarratixtext {
     public static Map<String, Object> baueText(String htmlOhneNamespace) {
         Map<String, Object> text = new HashMap<>();
         text.put("status", "generated");
-        String div = "<div xmlns=\"http://www.FHIRBeispielseite/42/xhtml\">" + htmlOhneNamespace + "</div>";
+        String div = "<div xmlns=\"http://www.w3.org/1999/xhtml\">" + htmlOhneNamespace + "</div>";
         text.put("div", div);
         return text;
     }
