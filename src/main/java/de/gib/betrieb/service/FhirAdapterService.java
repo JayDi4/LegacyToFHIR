@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Haupt-Service für die FHIR-Adapter-Funktionalität
@@ -47,9 +48,7 @@ public class FhirAdapterService {
     @Autowired
     private BerichtZuFhirAdapter berichtAdapter;
 
-    /**
-     * Holt einen einzelnen Patienten als FHIR Patient Resource
-     */
+    /** Holt einen einzelnen Patienten als FHIR Patient Resource */
     public Map<String, Object> getPatientAlsFhir(Long patientId) {
         Optional<Patient> patient = patientRepository.findById(patientId);
         if (patient.isPresent()) {
@@ -58,26 +57,20 @@ public class FhirAdapterService {
         return null;
     }
 
-    /**
-     * Holt alle Patienten als FHIR Patient Resources
-     */
+    /** Holt alle Patienten als FHIR Patient Resources */
     public List<Map<String, Object>> getAllePatiententAlsFhir() {
         List<Patient> patienten = patientRepository.findAll();
         List<Map<String, Object>> fhirPatienten = new ArrayList<>();
-
         for (Patient patient : patienten) {
             Map<String, Object> fhirPatient = patientAdapter.konvertiereZuFhir(patient);
             if (fhirPatient != null) {
                 fhirPatienten.add(fhirPatient);
             }
         }
-
         return fhirPatienten;
     }
 
-    /**
-     * Holt einen einzelnen Arzt als FHIR Practitioner Resource
-     */
+    /** Holt einen einzelnen Arzt als FHIR Practitioner Resource */
     public Map<String, Object> getArztAlsFhir(Long arztId) {
         Optional<Arzt> arzt = arztRepository.findById(arztId);
         if (arzt.isPresent()) {
@@ -86,26 +79,20 @@ public class FhirAdapterService {
         return null;
     }
 
-    /**
-     * Holt alle Ärzte als FHIR Practitioner Resources
-     */
+    /** Holt alle Ärzte als FHIR Practitioner Resources */
     public List<Map<String, Object>> getAlleAerzteAlsFhir() {
         List<Arzt> aerzte = arztRepository.findAll();
         List<Map<String, Object>> fhirAerzte = new ArrayList<>();
-
         for (Arzt arzt : aerzte) {
             Map<String, Object> fhirArzt = arztAdapter.konvertiereZuFhir(arzt);
             if (fhirArzt != null) {
                 fhirAerzte.add(fhirArzt);
             }
         }
-
         return fhirAerzte;
     }
 
-    /**
-     * Holt einen einzelnen Befund als FHIR Observation Resource
-     */
+    /** Holt einen einzelnen Befund als FHIR Observation Resource */
     public Map<String, Object> getBefundAlsFhir(Long befundId) {
         Optional<Befund> befund = befundRepository.findById(befundId);
         if (befund.isPresent()) {
@@ -114,17 +101,12 @@ public class FhirAdapterService {
         return null;
     }
 
-    /**
-     * Holt alle Befunde für einen Patienten als FHIR Observations
-     */
+    /** Holt alle Befunde für einen Patienten als FHIR Observations */
     public List<Map<String, Object>> getBefundeFuerPatient(Long patientId) {
-        // Erst alle Behandlungsfälle des Patienten finden
         List<Behandlungsfall> faelle = behandlungsfallRepository.findByPatientPatientenId(patientId);
         List<Map<String, Object>> fhirBefunde = new ArrayList<>();
-
         for (Behandlungsfall fall : faelle) {
             List<Befund> befunde = befundRepository.findByBehandlungsfallFallId(fall.getFallId());
-
             for (Befund befund : befunde) {
                 Map<String, Object> fhirBefund = befundAdapter.konvertiereZuFhir(befund);
                 if (fhirBefund != null) {
@@ -132,13 +114,10 @@ public class FhirAdapterService {
                 }
             }
         }
-
         return fhirBefunde;
     }
 
-    /**
-     * Holt einen einzelnen Bericht als FHIR DiagnosticReport Resource
-     */
+    /** Holt einen einzelnen Bericht als FHIR DiagnosticReport Resource */
     public Map<String, Object> getBerichtAlsFhir(Long berichtId) {
         Optional<Bericht> bericht = berichtRepository.findById(berichtId);
         if (bericht.isPresent()) {
@@ -147,16 +126,11 @@ public class FhirAdapterService {
         return null;
     }
 
-    /**
-     * Holt alle Berichte für einen Patienten als FHIR DiagnosticReports
-     */
+    /** Holt alle Berichte für einen Patienten als FHIR DiagnosticReports */
     public List<Map<String, Object>> getBerichteFuerPatient(Long patientId) {
-        // Erst alle Behandlungsfälle des Patienten finden
         List<Behandlungsfall> faelle = behandlungsfallRepository.findByPatientPatientenId(patientId);
         List<Map<String, Object>> fhirBerichte = new ArrayList<>();
-
         for (Behandlungsfall fall : faelle) {
-            // Für jeden Fall die Berichte holen
             for (Bericht bericht : fall.getBerichte()) {
                 Map<String, Object> fhirBericht = berichtAdapter.konvertiereZuFhir(bericht);
                 if (fhirBericht != null) {
@@ -164,13 +138,10 @@ public class FhirAdapterService {
                 }
             }
         }
-
         return fhirBerichte;
     }
 
-    /**
-     * Erstellt ein FHIR Bundle mit allen Daten eines Patienten
-     */
+    /** Erstellt ein FHIR Bundle mit allen Daten eines Patienten */
     public Map<String, Object> getPatientBundle(Long patientId) {
         Map<String, Object> bundle = new HashMap<>();
         bundle.put("resourceType", "Bundle");
@@ -179,39 +150,38 @@ public class FhirAdapterService {
 
         List<Map<String, Object>> entries = new ArrayList<>();
 
-        // Patient hinzufügen
+        // Patient
         Map<String, Object> patientFhir = getPatientAlsFhir(patientId);
         if (patientFhir != null) {
-            Map<String, Object> patientEntry = new HashMap<>();
-            patientEntry.put("resource", patientFhir);
-            entries.add(patientEntry);
+            entries.add(bundleEntryMitFullUrl(patientFhir));
         }
 
-        // Befunde hinzufügen
+        // Befunde
         List<Map<String, Object>> befunde = getBefundeFuerPatient(patientId);
         for (Map<String, Object> befund : befunde) {
-            Map<String, Object> befundEntry = new HashMap<>();
-            befundEntry.put("resource", befund);
-            entries.add(befundEntry);
+            entries.add(bundleEntryMitFullUrl(befund));
         }
 
-        // Berichte hinzufügen
+        // Berichte
         List<Map<String, Object>> berichte = getBerichteFuerPatient(patientId);
         for (Map<String, Object> bericht : berichte) {
-            Map<String, Object> berichtEntry = new HashMap<>();
-            berichtEntry.put("resource", bericht);
-            entries.add(berichtEntry);
+            entries.add(bundleEntryMitFullUrl(bericht));
         }
 
         bundle.put("entry", entries);
-        bundle.put("total", entries.size());
 
         return bundle;
     }
 
-    /**
-     * Statistik-Methode für den Adapter
-     */
+    /** Baut einen Bundle-Entry mit verpflichtender fullUrl (URN/UUID). */
+    private Map<String, Object> bundleEntryMitFullUrl(Map<String, Object> resource) {
+        Map<String, Object> entry = new HashMap<>();
+        entry.put("fullUrl", "urn:uuid:" + UUID.randomUUID());
+        entry.put("resource", resource);
+        return entry;
+    }
+
+    /** Statistik-Methode */
     public Map<String, Object> getAdapterStatistik() {
         Map<String, Object> statistik = new HashMap<>();
 

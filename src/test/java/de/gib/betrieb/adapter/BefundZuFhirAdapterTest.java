@@ -4,6 +4,7 @@ import de.gib.betrieb.model.Arzt;
 import de.gib.betrieb.model.Befund;
 import de.gib.betrieb.model.Behandlungsfall;
 import de.gib.betrieb.model.Patient;
+import de.gib.betrieb.testsupport.FhirTestValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +15,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,19 +26,18 @@ import static org.mockito.Mockito.*;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class BefundZuFhirAdapterTest {
 
-    @Mock
-    PatientZuFhirAdapter patientAdapter;
+    @Mock PatientZuFhirAdapter patientAdapter;
+    @Mock ArztZuFhirAdapter arztAdapter;
 
-    @Mock
-    ArztZuFhirAdapter arztAdapter;
-
-    @InjectMocks
-    BefundZuFhirAdapter adapter;
+    @InjectMocks BefundZuFhirAdapter adapter;
 
     Befund befund;
     Behandlungsfall fall;
     Patient patient;
     Arzt arzt;
+
+    private static final DateTimeFormatter FHIR_DATETIME_TZ =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
 
     @BeforeEach
     void setUp() {
@@ -62,8 +64,8 @@ class BefundZuFhirAdapterTest {
     }
 
     @Test
-    void konvertiereZuFhir() {
-        Map<String, Object> out = adapter.konvertiereZuFhir(befund);
+    void konvertiereZuFhir_observation_mit_werten() {
+        var out = adapter.konvertiereZuFhir(befund);
 
         assertEquals("Observation", out.get("resourceType"));
         assertEquals("100", out.get("id"));
@@ -72,16 +74,30 @@ class BefundZuFhirAdapterTest {
         assertTrue(out.containsKey("code"));
         assertEquals("Patient/1", ((Map<?, ?>) out.get("subject")).get("reference"));
         assertEquals("Encounter/77", ((Map<?, ?>) out.get("encounter")).get("reference"));
-        assertEquals("2024-04-01T12:00:00", out.get("effectiveDateTime"));
+
+        var erwartetesEffective = befund.getZeitpunkt()
+                .atZone(ZoneId.systemDefault())
+                .format(FHIR_DATETIME_TZ);
+        assertEquals(erwartetesEffective, out.get("effectiveDateTime"));
 
         Map<?, ?> valueQuantity = (Map<?, ?>) out.get("valueQuantity");
         assertNotNull(valueQuantity);
         assertEquals(120.5, (Double) valueQuantity.get("value"), 0.0001);
         assertEquals("mmHg", valueQuantity.get("unit"));
+
+        var res = FhirTestValidator.validateMap(out);
+        FhirTestValidator.assertValid(res);
     }
 
     @Test
     void generiereUrl() {
         assertEquals("Observation/55", adapter.generiereFhirUrl(55L));
+    }
+
+    @Test
+    void validierung_r4_prueft_observation_ist_gueltig() {
+        var out = adapter.konvertiereZuFhir(befund);
+        var res = FhirTestValidator.validateMap(out);
+        FhirTestValidator.assertValid(res);
     }
 }

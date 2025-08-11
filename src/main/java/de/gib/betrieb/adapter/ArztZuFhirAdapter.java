@@ -5,14 +5,10 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.HashMap;
 
-//Wandelt Legacy-Arzt-Daten in FHIR Practitioner Resource um
-
+// Wandelt Legacy-Arzt-Daten in FHIR Practitioner Resource um
 @Component
 public class ArztZuFhirAdapter {
 
-    /**
-     * Konvertiert einen Legacy-Arzt zu FHIR Practitioner JSON
-     */
     public Map<String, Object> konvertiereZuFhir(Arzt arzt) {
         if (arzt == null) {
             return null;
@@ -29,13 +25,13 @@ public class ArztZuFhirAdapter {
         meta.put("profile", new String[]{"http://hl7.org/fhir/StructureDefinition/Practitioner"});
         fhirPractitioner.put("meta", meta);
 
-        // Identifier (Arzt-ID als Identifikator)
+        // Identifier
         Map<String, Object> identifier = new HashMap<>();
         identifier.put("system", "http://krankenhaus.de/practitioner-id");
         identifier.put("value", arzt.getArztId().toString());
         fhirPractitioner.put("identifier", new Map[]{identifier});
 
-        // Name zusammensetzen
+        // Name
         Map<String, Object> name = new HashMap<>();
         name.put("use", "official");
         name.put("family", arzt.getNachname());
@@ -43,7 +39,7 @@ public class ArztZuFhirAdapter {
         name.put("prefix", new String[]{"Dr."});
         fhirPractitioner.put("name", new Map[]{name});
 
-        // Fachrichtung hinzufügen
+        // Fachrichtung
         if (arzt.getFachrichtung() != null) {
             Map<String, Object> qualification = new HashMap<>();
 
@@ -61,28 +57,28 @@ public class ArztZuFhirAdapter {
 
         fhirPractitioner.put("active", true);
 
+        // Narrativtext
+        String narr = erstelleNarratixtext.practitionerSatz(
+                "Dr.",
+                arzt.getVorname(),
+                arzt.getNachname(),
+                arzt.getFachrichtung()
+        );
+        fhirPractitioner.put("text", erstelleNarratixtext.baueText(narr));
+
         return fhirPractitioner;
     }
 
-
-   //  Hardgecodetes Mapping von Fachrichtungen zu SNOMED CT Codes als Beispiel
-
+    // Mapping
     private String mapFachrichtungZuSnomed(String fachrichtung) {
         switch (fachrichtung) {
-            case "Innere Medizin":
-                return "419192003";
-            case "Chirurgie":
-                return "394609007";
-            case "Orthopädie":
-                return "394801008";
-            case "Kardiologie":
-                return "394579002";
-            case "Neurologie":
-                return "394591006";
-            case "Radiologie":
-                return "394914008";
-            default:
-                return "309343006";
+            case "Innere Medizin": return "419192003";
+            case "Chirurgie":      return "394609007";
+            case "Orthopädie":     return "394801008";
+            case "Kardiologie":    return "394579002";
+            case "Neurologie":     return "394591006";
+            case "Radiologie":     return "394914008";
+            default:               return "309343006";
         }
     }
 
@@ -90,12 +86,11 @@ public class ArztZuFhirAdapter {
         return "Practitioner/" + arztId;
     }
 
-
     public Map<String, Object> erstellePractitionerReference(Arzt arzt) {
         Map<String, Object> reference = new HashMap<>();
         reference.put("reference", "Practitioner/" + arzt.getArztId());
-        reference.put("display", "Dr. " + arzt.getVorname() + " " + arzt.getNachname() +
-                " (" + arzt.getFachrichtung() + ")");
+        reference.put("display", "Dr. " + arzt.getVorname() + " " + arzt.getNachname()
+                + " (" + arzt.getFachrichtung() + ")");
         return reference;
     }
 }

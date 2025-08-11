@@ -1,6 +1,7 @@
 package de.gib.betrieb.adapter;
 
 import de.gib.betrieb.model.Patient;
+import de.gib.betrieb.testsupport.FhirTestValidator;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -12,16 +13,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class PatientZuFhirAdapterTest {
 
     @Test
-    void konvertiereZuFhir() {
-        Patient p = Mockito.mock(Patient.class);
+    void konvertiereZuFhir_basisfelder_korrekt() {
+        var p = Mockito.mock(Patient.class);
         Mockito.when(p.getPatientenId()).thenReturn(42L);
         Mockito.when(p.getVorname()).thenReturn("Lara");
         Mockito.when(p.getNachname()).thenReturn("Schmidt");
         Mockito.when(p.getGeschlecht()).thenReturn("weiblich");
         Mockito.when(p.getGeburtsdatum()).thenReturn(LocalDate.of(1999, 5, 1));
 
-        PatientZuFhirAdapter adapter = new PatientZuFhirAdapter();
-        Map<String, Object> out = adapter.konvertiereZuFhir(p);
+        var adapter = new PatientZuFhirAdapter();
+        var out = adapter.konvertiereZuFhir(p);
 
         assertEquals("Patient", out.get("resourceType"));
         assertEquals("42", out.get("id"));
@@ -29,20 +30,40 @@ class PatientZuFhirAdapterTest {
         assertEquals("1999-05-01", out.get("birthDate"));
         assertTrue(out.containsKey("name"));
         assertEquals(true, out.get("active"));
+
+        var res = FhirTestValidator.validateMap(out);
+        FhirTestValidator.assertValid(res);
     }
 
     @Test
     void url_und_reference() {
-        Patient p = Mockito.mock(Patient.class);
+        var p = Mockito.mock(Patient.class);
         Mockito.when(p.getPatientenId()).thenReturn(5L);
         Mockito.when(p.getVorname()).thenReturn("Tim");
         Mockito.when(p.getNachname()).thenReturn("Bauer");
 
-        PatientZuFhirAdapter adapter = new PatientZuFhirAdapter();
+        var adapter = new PatientZuFhirAdapter();
+
         assertEquals("Patient/5", adapter.generiereFhirUrl(5L));
 
         Map<String, Object> ref = adapter.erstellePatientReference(p);
         assertEquals("Patient/5", ref.get("reference"));
         assertEquals("Tim Bauer", ref.get("display"));
+    }
+
+    @Test
+    void validierung_r4_prueft_patient_ist_gueltig() {
+        var p = Mockito.mock(Patient.class);
+        Mockito.when(p.getPatientenId()).thenReturn(99L);
+        Mockito.when(p.getVorname()).thenReturn("Erika");
+        Mockito.when(p.getNachname()).thenReturn("Musterfrau");
+        Mockito.when(p.getGeschlecht()).thenReturn("weiblich");
+        Mockito.when(p.getGeburtsdatum()).thenReturn(LocalDate.of(1985, 2, 17));
+
+        var adapter = new PatientZuFhirAdapter();
+        var out = adapter.konvertiereZuFhir(p);
+
+        var res = FhirTestValidator.validateMap(out);
+        FhirTestValidator.assertValid(res);
     }
 }
