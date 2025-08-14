@@ -41,12 +41,6 @@ Das Mapping von Legacy-Entitäten zu FHIR-Ressourcen erfolgt in den Adapter-Klas
 
 Die Unit-Tests unter `src/test/java` nutzen den **HAPI FHIR Instance Validator**, um die erzeugten FHIR-Ressourcen zu überprüfen. Die Klasse `FhirTestValidator` kapselt den Validator und wird in den Adapter-Tests verwendet.
 
-Tests können mit folgendem Befehl ausgeführt werden:
-
-```bash
-./mvnw test
-```
-
 
 ## Wichtige Endpunkte
 
@@ -78,6 +72,8 @@ Tests können mit folgendem Befehl ausgeführt werden:
 - OpenAPI-Definition: `http://localhost:8090/v3/api-docs`
 
 Mit diesen Informationen lässt sich das Projekt schnell in Betrieb nehmen und zur Bereitstellung FHIR-konformer Daten aus einem Legacy-System nutzen.
+
+
 
 
 
